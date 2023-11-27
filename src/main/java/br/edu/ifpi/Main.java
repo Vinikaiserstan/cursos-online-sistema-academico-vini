@@ -22,11 +22,10 @@ public class Main {
         List<Usuario> usuarios = new ArrayList<>();
         Curso cursoJava = new Curso("Programação Java", "Aberto", 40);
 
-        // Exemplo de usuários
-        Aluno aluno1 = new Aluno("vinicius", "aluno1", "vinicius@email.com", null);
+        Aluno aluno1 = new Aluno("Vinicius", "aluno1", "vinicius@email.com", "aluno");
         aluno1.setSenha("senhaAluno1");
 
-        Professor professor1 = new Professor("ProfSilva", "professor1", "silva@email.com", null);
+        Professor professor1 = new Professor("ProfSilva", "professor1", "silva@email.com", "professor");
         professor1.setSenha("senhaProfessor1");
 
         usuarios.add(aluno1);
@@ -66,11 +65,8 @@ public class Main {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    String nome = resultSet.getString("nome");
-                    String email = resultSet.getString("email");
-                    
-                    
-                    return new Usuario(nome, email, sql, sql);
+                    return new Usuario(resultSet.getString("nome"), resultSet.getString("id"),
+                            resultSet.getString("email"), resultSet.getString("tipo"));
                 }
             }
         } catch (SQLException e) {
@@ -93,10 +89,10 @@ public class Main {
 
             switch (opcao) {
                 case 1:
-                    System.out.println("Implemente a lógica para exibir as disciplinas matriculadas do banco de dados");
+                    aluno.verDisciplinasMatriculadasNoBancoDeDados();
                     break;
                 case 2:
-                    System.out.println("Implemente a lógica para exibir as notas do banco de dados");
+                    aluno.verNotasNoBancoDeDados();
                     break;
                 case 3:
                     System.out.println("Saindo do sistema. Até logo!");
@@ -125,16 +121,24 @@ public class Main {
             switch (opcao) {
                 case 1:
                     System.out.print("Digite o nome da disciplina: ");
-                    scanner.nextLine();
-                    System.out.println("Implemente a lógica para associar disciplina no banco de dados");
+                    String disciplina = scanner.nextLine();
+                    professor.associarDisciplinaNoBancoDeDados(disciplina);
+                    System.out.println("Disciplina associada com sucesso!");
                     break;
                 case 2:
                     System.out.print("Digite o ID do aluno: ");
+                    String idAluno = scanner.nextLine();
                     System.out.print("Digite a disciplina: ");
-                    scanner.nextLine();
+                    disciplina = scanner.nextLine();
                     System.out.print("Digite a nota: ");
+                    int nota = scanner.nextInt();
                     scanner.nextLine();
-                    System.out.println("Implemente a lógica para dar nota no banco de dados");
+                    Aluno aluno = procurarAluno(curso, idAluno);
+                    if (aluno != null) {
+                        professor.darNotaNoBancoDeDados(aluno, disciplina, nota);
+                    } else {
+                        System.out.println("Aluno não encontrado.");
+                    }
                     break;
                 case 3:
                     System.out.println("Saindo do sistema. Até logo!");
@@ -146,5 +150,28 @@ public class Main {
             System.out.println();
 
         } while (opcao != 3);
+    }
+
+    private static Aluno procurarAluno(Curso curso, String idAluno) {
+        String sql = "SELECT * FROM alunos WHERE id = ?";
+        try (Connection connection = Conexao.getConexao();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, idAluno);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new Aluno(
+                            resultSet.getString("nome"),
+                            resultSet.getString("id"),
+                            resultSet.getString("email"),
+                            resultSet.getString("tipo")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

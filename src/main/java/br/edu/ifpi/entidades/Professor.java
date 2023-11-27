@@ -1,28 +1,45 @@
 package br.edu.ifpi.entidades;
 
-import java.util.List;
+import br.edu.ifpi.dao.Conexao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class Professor extends Usuario {
-    private List<String> disciplinasMinistradas;
 
-    public Professor(String nome, String id, String email, String senha) {
-        super(nome, id, email, "professor", senha);
+    public Professor(String nome, String id, String email, String tipo) {
+        super(nome, id, email, tipo);
     }
 
-    public void associarDisciplina(String disciplina) {
-        disciplinasMinistradas.add(disciplina);
-    }
+    public void associarDisciplinaNoBancoDeDados(String disciplina) {
+        String sql = "INSERT INTO disciplinas_professor (id_professor, disciplina) VALUES (?, ?)";
+        try (Connection connection = Conexao.getConexao();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-    public void darNota(Aluno aluno, String disciplina, int nota) {
-        if (disciplinasMinistradas.contains(disciplina)) {
-            aluno.receberNota(disciplina, nota);
-            System.out.println("Nota atribuída com sucesso!");
-        } else {
-            System.out.println("Professor não ministra a disciplina " + disciplina);
+            statement.setString(1, this.getId());
+            statement.setString(2, disciplina);
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    public String getEmail() {
-        return null;
+    public void darNotaNoBancoDeDados(Aluno aluno, String disciplina, int nota) {
+        String sql = "INSERT INTO notas (id_aluno, disciplina, nota) VALUES (?, ?, ?)";
+        try (Connection connection = Conexao.getConexao();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, aluno.getId());
+            statement.setString(2, disciplina);
+            statement.setInt(3, nota);
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+
+    
 }
