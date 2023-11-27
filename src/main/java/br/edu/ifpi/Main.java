@@ -1,10 +1,11 @@
 package br.edu.ifpi;
+
+import br.edu.ifpi.dao.Conexao;
 import br.edu.ifpi.entidades.Aluno;
 import br.edu.ifpi.entidades.Curso;
 import br.edu.ifpi.entidades.Professor;
 import br.edu.ifpi.entidades.Usuario;
-import br.edu.ifpi.dao.Conexao;
-import br.edu.ifpi.entidades.Disciplina;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,7 +41,6 @@ public class Main {
         System.out.print("Digite a senha: ");
         String senha = scanner.nextLine();
 
-        
         Usuario usuario = buscarUsuario(nomeUsuario, senha);
         if (usuario != null) {
             if (usuario instanceof Aluno) {
@@ -66,8 +66,11 @@ public class Main {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
+                    String nome = resultSet.getString("nome");
+                    String email = resultSet.getString("email");
                     
-                    return new Usuario(resultSet.getString("nome"), resultSet.getString("email"), sql, sql);
+                    
+                    return new Usuario(nome, email, sql, sql);
                 }
             }
         } catch (SQLException e) {
@@ -90,11 +93,9 @@ public class Main {
 
             switch (opcao) {
                 case 1:
-                    
                     System.out.println("Implemente a lógica para exibir as disciplinas matriculadas do banco de dados");
                     break;
                 case 2:
-                    
                     System.out.println("Implemente a lógica para exibir as notas do banco de dados");
                     break;
                 case 3:
@@ -104,7 +105,7 @@ public class Main {
                     System.out.println("Opção inválida. Tente novamente.");
             }
 
-            System.out.println(); 
+            System.out.println();
 
         } while (opcao != 3);
     }
@@ -119,13 +120,12 @@ public class Main {
             System.out.println("3. Sair");
             System.out.print("Escolha uma opção: ");
             opcao = scanner.nextInt();
-            scanner.nextLine();  
+            scanner.nextLine();
 
             switch (opcao) {
                 case 1:
                     System.out.print("Digite o nome da disciplina: ");
                     scanner.nextLine();
-                    
                     System.out.println("Implemente a lógica para associar disciplina no banco de dados");
                     break;
                 case 2:
@@ -133,8 +133,7 @@ public class Main {
                     System.out.print("Digite a disciplina: ");
                     scanner.nextLine();
                     System.out.print("Digite a nota: ");
-                    scanner.nextLine();  
-                    
+                    scanner.nextLine();
                     System.out.println("Implemente a lógica para dar nota no banco de dados");
                     break;
                 case 3:
@@ -144,10 +143,8 @@ public class Main {
                     System.out.println("Opção inválida. Tente novamente.");
             }
 
-            System.out.println(); 
+            System.out.println();
 
         } while (opcao != 3);
     }
-
-    //lutando para fazer o banco de dados funcionar
 }
