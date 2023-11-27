@@ -19,27 +19,19 @@ public class Main {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        List<Usuario> usuarios = new ArrayList<>();
+        List usuarios = new ArrayList<>();
         Curso cursoJava = new Curso("Programação Java", "Aberto", 40);
-
-        Aluno aluno1 = new Aluno("Vinicius", "aluno1", "vinicius@email.com", "aluno");
-        aluno1.setSenha("senhaAluno1");
-
-        Professor professor1 = new Professor("ProfSilva", "professor1", "silva@email.com", "professor");
-        professor1.setSenha("senhaProfessor1");
-
-        usuarios.add(aluno1);
-        usuarios.add(professor1);
 
         realizarLogin(cursoJava, usuarios);
     }
 
-    private static void realizarLogin(Curso curso, List<Usuario> usuarios) {
+    private static void realizarLogin(Curso curso, List usuarios) {
         System.out.print("Digite o nome de usuário: ");
         String nomeUsuario = scanner.nextLine();
         System.out.print("Digite a senha: ");
         String senha = scanner.nextLine();
-
+    
+        // Verifica se o usuário existe e valida a senha
         Usuario usuario = buscarUsuario(nomeUsuario, senha);
         if (usuario != null) {
             if (usuario instanceof Aluno) {
@@ -54,6 +46,7 @@ public class Main {
             realizarLogin(curso, usuarios);
         }
     }
+    
 
     private static Usuario buscarUsuario(String nomeUsuario, String senha) {
         String sql = "SELECT * FROM usuarios WHERE nome = ? AND senha = ?";
